@@ -46,16 +46,19 @@ func main() {
 
 	})
 
-	routerGroup.GET("/product", func(ctx *gin.Context) {
-		authHeader := AuthHeader{} 
-
-		if err := ctx.ShouldBindJSON(&authHeader); err != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H {
-				"message": "Unauthorized",
-			})
-			return 
-		}
+	routerGroup.GET("/customer", func(ctx *gin.Context){
+		ctx.JSON(http.StatusOK, gin.H{
+			"message" : "customer",
+		})
 	})
+
+	routerGroup.GET("/product", func(ctx *gin.Context){
+		ctx.JSON(http.StatusOK, gin.H{
+			"message" : "product",
+		})
+	})
+
+	
 
 
 	err := routerEngine.Run(":8888")
