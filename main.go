@@ -49,9 +49,11 @@ func main() {
 			c.JSON(200, gin.H {
 				"token": token,
 			})
-		} else {
-			c.AbortWithStatus(http.StatusUnauthorized)
 		}
+		
+		// else {
+		// 	c.AbortWithStatus(http.StatusUnauthorized)
+		// }
 
 	})
 
