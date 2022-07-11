@@ -48,9 +48,11 @@ func main() {
 				c.AbortWithStatus(http.StatusUnauthorized)
 				return 
 			}
-			c.JSON(200, gin.H {
+			c.JSON(http.StatusOK, gin.H {
 				"token": token,
 			})
+		} else {
+			c.AbortWithStatus(http.StatusUnauthorized)
 		}
 		
 		// else {
@@ -63,13 +65,13 @@ func main() {
 	
 	protectedGroup.GET("/customer", func(ctx *gin.Context){
 		ctx.JSON(http.StatusOK, gin.H{
-			"message" : "customer",
+			"message" : ctx.GetString("user-id"),
 		})
 	})
 
 	protectedGroup.GET("/product", func(ctx *gin.Context){
 		ctx.JSON(http.StatusOK, gin.H{
-			"message" : "product",
+			"message" : ctx.GetString("user-id"),
 		})
 	})
 

@@ -52,6 +52,7 @@ func (t *token) FetchAccessToken(accessDetail *model.AccessDetail) (string, erro
 }
 
 func (t *token) CreateAccessToken(cred *model.Credential) (*model.TokenDetails, error) {
+	td := &model.TokenDetails{}
 	now := time.Now().UTC()
 	end := now.Add(t.cfg.AccessTokenLifeTime)
 
@@ -61,6 +62,7 @@ func (t *token) CreateAccessToken(cred *model.Credential) (*model.TokenDetails, 
 		},
 		Username: cred.Username, 
 		Email: cred.Email,
+		AccessUUID: td.AccessUuid,
 	}
 
 	claims.IssuedAt = now.Unix()
@@ -73,7 +75,7 @@ func (t *token) CreateAccessToken(cred *model.Credential) (*model.TokenDetails, 
 
 	newToken, err := token.SignedString([]byte(t.cfg.JwtSignatureKey))
 
-	td := &model.TokenDetails{}
+	// td := &model.TokenDetails{}
 	td.AccessToken = newToken
 
 	if err != nil {

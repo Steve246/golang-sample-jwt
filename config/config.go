@@ -26,6 +26,11 @@ func (c Config) readConfig() Config {
 	JwtSigningMethod: jwt.SigningMethodHS256,
 	JwtSignatureKey: "31N!GMA",
 	AccessTokenLifeTime: 60 * time.Second,
+	Client: redis.NewClient(&redis.Options{
+		Addr: "localhost:8888",
+		Password: "",
+		DB: 0,
+	}),
 		
 	}
 	return c
