@@ -6,4 +6,5 @@ type MyClaims struct {
 	jwt.StandardClaims
 	Username string `json:"username"`
 	Email string `json:"email"`
+	AccessUUID string `json:"AccessUUID"`
 }

@@ -19,6 +19,8 @@ type AuthHeader struct {
 func main() {
 	routerEngine := gin.Default()
 
+	//reddis config 
+
 	// routerEngine.Use(AuthTokenMiddleware())
 
 	cfg := config.NewConfig()

@@ -3,6 +3,7 @@ package config
 import (
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -11,6 +12,7 @@ type TokenConfig struct {
 	JwtSigningMethod *jwt.SigningMethodHMAC
 	JwtSignatureKey string 
 	AccessTokenLifeTime time.Duration
+	Client *redis.Client
 }
 
 
