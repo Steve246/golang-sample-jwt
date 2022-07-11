@@ -1,7 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"golang-sample-jwt/config"
+	"golang-sample-jwt/delivery/middleware"
+	"golang-sample-jwt/model"
+	"golang-sample-jwt/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,21 +14,23 @@ type AuthHeader struct {
 	AuthorizationHeader string `header:"Authorization"`
 }
 
-type Credential struct {
-	Username string 	`json:"username"`
-	Password string   `json:"password"`
-}
+
 
 func main() {
 	routerEngine := gin.Default()
 
-	routerEngine.Use(AuthTokenMiddleware())
+	// routerEngine.Use(AuthTokenMiddleware())
+
+	cfg := config.NewConfig()
+
+	tokenService := utils.NewTokenService(cfg.TokenConfig)
 
 	routerGroup := routerEngine.Group("/api")
 
 	routerGroup.POST("/auth/login", func(c *gin.Context){
 
-		var user Credential
+		var user model.Credential
+
 
 		if err := c.BindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H {
@@ -35,27 +40,35 @@ func main() {
 		}
 
 		if user.Username == "enigma" && user.Password == "123" {
+			token, err := tokenService.CreateAccessToken(&user)
+
+			if err != nil {
+				c.AbortWithStatus(http.StatusUnauthorized)
+				return 
+			}
 			c.JSON(200, gin.H {
-
-				"token": "123456",
-
+				"token": token,
 			})
 		} else {
-			c.AbortWithStatus(401)
+			c.AbortWithStatus(http.StatusUnauthorized)
 		}
 
 	})
 
-	routerGroup.GET("/product", func(ctx *gin.Context) {
-		authHeader := AuthHeader{} 
-
-		if err := ctx.ShouldBindJSON(&authHeader); err != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H {
-				"message": "Unauthorized",
-			})
-			return 
-		}
+	protectedGroup := routerGroup.Group("/master", middleware.NewTokenValidator(tokenService).RequireToken())
+	protectedGroup.GET("/customer", func(ctx *gin.Context){
+		ctx.JSON(http.StatusOK, gin.H{
+			"message" : "customer",
+		})
 	})
+
+	protectedGroup.GET("/product", func(ctx *gin.Context){
+		ctx.JSON(http.StatusOK, gin.H{
+			"message" : "product",
+		})
+	})
+
+	
 
 
 	err := routerEngine.Run(":8888")
@@ -68,31 +81,3 @@ func main() {
 
 }
 
-
-func AuthTokenMiddleware () gin.HandlerFunc {
-
-	return func(c *gin.Context) {
-		if c.Request.URL.Path == "/api/auth/login" {
-			c.Next()
-			fmt.Println("sss")
-		} else {
-			h := AuthHeader{}
-			if err := c.ShouldBindHeader(&h); err != nil {
-				c.JSON(http.StatusUnauthorized, gin.H {
-					"message": "Unauthorized",
-				})
-				c.Abort()
-			}
-			if h.AuthorizationHeader == "123456" {
-				c.Next()
-			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{
-					"message": "token Invalid",
-				})
-				c.Abort()
-
-			}
-		}
-	}
-
-}
