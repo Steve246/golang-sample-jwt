@@ -56,6 +56,7 @@ func main() {
 	})
 
 	protectedGroup := routerGroup.Group("/master", middleware.NewTokenValidator(tokenService).RequireToken())
+	
 	protectedGroup.GET("/customer", func(ctx *gin.Context){
 		ctx.JSON(http.StatusOK, gin.H{
 			"message" : "customer",

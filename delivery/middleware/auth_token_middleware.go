@@ -10,7 +10,7 @@ import (
 )
 
 type authHeader struct {
-	Authorization string `header: "Authorization`
+	Authorization string `header:"Authorization"`
 }
 
 type AuthTokenMiddleware interface {
